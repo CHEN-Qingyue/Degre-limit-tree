@@ -143,6 +143,8 @@ void plusEdge(Arbre& a, Edge e){
   a.sommets[e.src] = a.sommets[e.dest] = 1;
 }
 
+
+
 int dfs1(Arbre& a, int x, int s, int pre) {
     int i;
     for (i = 0; i <= N; i++) {
@@ -181,27 +183,28 @@ int dfs1(Arbre& a, int x, int s, int pre) {
     }
     return a.dp[s];
 }
-/*
 
-void dfs2(Arbre& a, int x, int pre, int s){
-  //dfs求x到s路程上的与x相连的边
-  int flag = 0;
-  for (int i = 0; i <= N; i++){
-    if (i != pre && a.g[x][i]){
-      if(i==s){
-	      flag = 1;
-      }else
-	dfs2(a, i, x, s);
+// trouver un arête qui est de poids maximum et relié avec point x parmis les arêtes pour allant de x au point s
+int dfs2(Arbre& a, int x, int xc, int pre, int s){
+    int flag = 0;
+
+    for (int i = 0; i <= N; i++){
+        if (i != pre && a.g[x][i]){
+            if(i==s){
+                flag = 1;
+            }else{
+                dfs2(a, i, x, s);
+            }
+            if(x==xc && flag){
+                a.dp2.src = x;
+                a.dp2.dest = i;
+                a.dp2.poids = a.g[x][i];
+                return a.dp2.poids;
+            }
+        }
     }
-    if(flag){
-      a.dp2.src = x;
-      a.dp2.dest = i;
-      a.dp2.poids = a.g[x][i];
-      break;
-    }
-  }
+    return -1;
 }
-*/
 
 
 void trouver(Graph& G){
@@ -227,33 +230,74 @@ void trouver(Graph& G){
   delete pa;
 }
 
-/*
+// optimiser l'arbre couvrant pour trouver les autres arbres couvrants de poids minimum
 void optimizer(Graph& G){
-  for(auto iterE:G.nonEdges){
-    for(auto iterA:G.Tmini){
-      //tous les deux sommets sont full
-      if(iterA.m[iterE.src]==G.limite[iterE.src] && iterA.m[iterE.dest]==G.limite[iterE.dest]){
-        continue;
-      }
-      //tous les deux sommets ne sont pas full
-      if(iterA.m[iterE.src]<G.limite[iterE.src] && iterA.m[iterE.dest]<G.limite[iterE.dest]){
-        dfs1(iterA,iterE.src,-1); //!!!
-        if(iterE.poids < G.dp1[iterE.src])
-      }
-      
-      continue;
-      //src est full et dest n'est pas full
-      if(iterA.m[iterE.src]==G.limite[iterE.src] && iterA.m[iterE.dest]<G.limite[iterE.dest]){
-        dfs2(iterA,iterE.src,-1,iterE.dest); //!!!
-      }continue;
-      //src est full et dest n'est pas full
-      if(iterA.m[iterE.src]==G.limite[iterE.src] && iterA.m[iterE.dest]==G.limite[iterE.dest]){
-        dfs2(iterA,iterE.dest,-1,iterE.src); //!!!
-      }continue;
+    for(auto iterE:G.nonEdges){
+        for(auto iterA:G.Tmini){
+            int max = 0;    //poids d'arête à supprimer
+            //还没初始化dp！！！
+        
+            //tous les deux sommets sont full
+            if(iterA.m[iterE.src]==G.limite[iterE.src] && iterA.m[iterE.dest]==G.limite[iterE.dest]){
+                continue;
+            }
+
+            //tous les deux sommets ne sont pas full
+            if(iterA.m[iterE.src]<G.limite[iterE.src] && iterA.m[iterE.dest]<G.limite[iterE.dest]){
+                max = dfs1(iterA,iterE.src,-1); //!!!
+                if (iterE.poids < max) continue;
+                if (iterE.poids == max) {
+                    for (auto itE : G.dp1[iterE.dest]) {
+                        Arbre* pa = new Arbre(iterA);
+                        minusEdge(*pa, itE);
+                        plusEdge(*pa, iterE);
+                        G.Tmini.push_back(*pa);
+                        delete pa;
+                    }
+                }else{   //iterE.poids > max
+                    G.Tmini.clear();
+                    for (auto itE : G.dp1[iterE.dest]) {
+                        Arbre* pa = new Arbre(iterA);
+                        minusEdge(*pa, itE);
+                        plusEdge(*pa, iterE);
+                        G.Tmini.push_back(*pa);
+                        delete pa;
+                    }
+                }
+                continue;
+            }
+        
+            G.dp2.clear();
+            //src est full et dest n'est pas full
+            if(iterA.m[iterE.src]==G.limite[iterE.src] && iterA.m[iterE.dest]<G.limite[iterE.dest]){
+                max = dfs2(iterA,iterE.src, iterE.src, -1,iterE.dest); //!!!
+            }
+            //src est full et dest n'est pas full
+            if(iterA.m[iterE.src]==G.limite[iterE.src] && iterA.m[iterE.dest]==G.limite[iterE.dest]){
+                max = dfs2(iterA,iterE.dest, iterE.dest, -1,iterE.src); //!!!
+            }
+
+            if (iterE.poids > max) continue;
+            if (iterE.poids == max) {
+                Arbre* pa = new Arbre(iterA);
+                minusEdge(*pa, G.dp2);
+                plusEdge(*pa, iterE);
+                G.Tmini.push_back(*pa);
+                delete pa;
+                continue;
+            }
+            else{    //iterE.poids < max
+                G.Tmini.clear();
+                G.mini = G.mini + iterE.poids - max;
+                Arbre* pa = new Arbre(iterA);
+                minusEdge(*pa, G.dp2);
+                plusEdge(*pa, iterE);
+                G.Tmini.push_back(*pa);
+                delete pa;
+            }
+        }
     }
-  }
 }
-*/
 
 int main(){
   //int s[5] = {1,1,1,1,1};
