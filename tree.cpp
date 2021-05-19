@@ -156,7 +156,7 @@ void plusEdge(Arbre& a, Edge e){
   if(identique_dest == 0){ sommet+=e.dest;}
   */
 }
-
+/*
 void dfs1(Arbre& a, int x, int pre){  //dfs求root到某节点路程上的最大值
   int i;
   for (i = 0; i <= N; i++){
@@ -194,7 +194,7 @@ void dfs2(Arbre& a, int x, int pre, int s){
     }
   }
 }
-
+*/
 
 
 void trouver(Graph& G){
@@ -220,7 +220,7 @@ void trouver(Graph& G){
   delete pa;
 }
 
-
+/*
 void optimizer(Graph& G){
   for(auto iterE:G.nonEdges){
     for(auto iterA:G.Tmini){
@@ -246,7 +246,7 @@ void optimizer(Graph& G){
     }
   }
 }
-
+*/
 
 int main(){
   //int s[5] = {1,1,1,1,1};
