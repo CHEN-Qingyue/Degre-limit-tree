@@ -141,40 +141,47 @@ void plusEdge(Arbre& a, Edge e){
   a.m[e.src]++;
   a.m[e.dest]++;
   a.sommets[e.src] = a.sommets[e.dest] = 1;
-  /*
-  int identique_src = 0;
-  int identique_dest = 0;
-  for(int i=0; i<N; i++){
-    if(sommets[i]==e.src){
-      identique_src = 1;
-    }
-    else if(sommets[i]==e.dest){
-      identique_dest = 1;
-    }
-  }
-  if(identique_src == 0){ sommets=e.src;}
-  if(identique_dest == 0){ sommet+=e.dest;}
-  */
-}
-/*
-void dfs1(Arbre& a, int x, int pre){  //dfs求root到某节点路程上的最大值
-  int i;
-  for (i = 0; i <= N; i++){
-    if (i != pre && a.g[x][i]){
-      if (a.dp1[i].poids == -1){
-	if (a.dp1[x].poids > a.g[x][i]){
-	  a.dp1[i] = a.dp1[x];
-	}else{
-	  a.dp1[i].poids = a.g[x][i];
-	  a.dp1[i].src = x;   //记录这条边
-	  a.dp1[i].dest = i;
-	}
-      }
-      dfs1(a, i, x);
-    }
-  }
 }
 
+int dfs1(Arbre& a, int x, int s, int pre) {
+    int i;
+    for (i = 0; i <= N; i++) {
+        if (i != pre && a.g[x][i]) {
+            if (a.dp[i] == -1) {
+                if (a.dp[x] > a.g[x][i]) {
+                    a.dp1[i].clear();
+                    for (auto itE : a.dp1[x]) {
+                        a.dp1[i].push_back(itE);
+                    }
+                    a.dp[i] = a.dp[x];
+                    //if (s == i) max = a.dp[x];
+                }
+                else if (a.dp[x] == a.g[x][i]) {
+                    Edge* pe = new Edge;
+                    pe->poids = a.g[x][i];
+                    pe->src = x < i ? x : i;   //记录这条边
+                    pe->dest = x > i ? x : i;
+                    a.dp1[x].push_back(*pe);
+                    delete pe;
+                }
+                else {  //a.dp1[x].poids < a.g[x][i]
+                    a.dp1[i].clear();
+                    Edge* pe = new Edge;
+                    pe->poids = a.g[x][i];
+                    pe->src = x < i ? x : i;   //记录这条边
+                    pe->dest = x > i ? x : i;
+                    a.dp1[i].push_back(*pe);
+                    //if (s == i) max = a.g[x][i];
+                    a.dp[i] = a.g[x][i];
+                    delete pe;
+                }
+            }
+            dfs1(a, i, s, x);
+        }
+    }
+    return a.dp[s];
+}
+/*
 
 void dfs2(Arbre& a, int x, int pre, int s){
   //dfs求x到s路程上的与x相连的边
