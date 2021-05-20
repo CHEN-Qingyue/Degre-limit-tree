@@ -21,14 +21,6 @@ public:
     friend bool operator < (Edge e1, Edge e2){
         return e1.poids < e2.poids;
     }
-    /*
-  Edge& operator = (Edge& e2){
-    this->src = e2.src;
-    this->dest = e2.dest;
-    this->poids = e2.poids;
-    return *this;
-  }
-  */
   Edge(){};
   Edge(const Edge& e);  //constructeur par copie
 };
@@ -61,7 +53,6 @@ Arbre::Arbre() {
     memset(this->dp,-1, N*sizeof(int));
     this->poids = 0;
     
-
 }
 
 Arbre::Arbre(const Arbre& a){
@@ -76,7 +67,6 @@ Arbre::Arbre(const Arbre& a){
   for(auto iterE : a.edges){
     this->edges.insert(iterE);
   }
-
 }
 
 // classe pour le graphique
@@ -114,7 +104,7 @@ Graph::Graph(int V,int E,int lim[N],int g[N][N]):V(V),E(E)
     
     for(int i=0;i<N;i++){
         this->sommets[i]=1;
-	      this->limite[i] = lim[i];
+	this->limite[i] = lim[i];
 	    for(int j=0;j<N;j++){
 	      this->g[i][j] = g[i][j];
 	    }
